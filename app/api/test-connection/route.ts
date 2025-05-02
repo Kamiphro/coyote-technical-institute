@@ -1,14 +1,21 @@
 import { NextResponse } from "next/server"
-import dbConnect from "@/lib/mongodb"
+import { connectToDatabase } from "@/lib/mongodb"
 
 export async function GET() {
   try {
-    await dbConnect()
-    return NextResponse.json({ success: true, message: "Connected to MongoDB" })
+    const { client } = await connectToDatabase()
+
+    // Test the connection by running a simple command
+    await client.db().command({ ping: 1 })
+
+    return NextResponse.json({
+      success: true,
+      message: "Successfully connected to MongoDB",
+    })
   } catch (error) {
-    console.error("MongoDB connection error:", error)
+    console.error("Database connection error:", error)
     return NextResponse.json(
-      { success: false, message: "Failed to connect to MongoDB", error: String(error) },
+      { success: false, message: "Failed to connect to MongoDB", error: error.message },
       { status: 500 },
     )
   }

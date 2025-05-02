@@ -1,62 +1,50 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { BookOpen, Calendar, LogOut, PenSquare, Search, Trash2, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { getLoggedInStudent, logout } from "@/actions/auth-actions"
+
+// Mock data for demonstration
+const studentData = {
+  name: "Alex Johnson",
+  id: "CTI2023456",
+  major: "Computer Science",
+  creditHours: 42,
+  gpa: 3.75,
+  enrolledCourses: [
+    {
+      id: "CS101",
+      name: "Introduction to Programming",
+      credits: 3,
+      schedule: "Mon/Wed 10:00-11:30 AM",
+      instructor: "Dr. Smith",
+    },
+    { id: "CS210", name: "Data Structures", credits: 4, schedule: "Tue/Thu 1:00-2:30 PM", instructor: "Dr. Chen" },
+    {
+      id: "MATH240",
+      name: "Discrete Mathematics",
+      credits: 3,
+      schedule: "Mon/Wed/Fri 2:00-3:00 PM",
+      instructor: "Dr. Garcia",
+    },
+    {
+      id: "ENG101",
+      name: "Technical Writing",
+      credits: 3,
+      schedule: "Tue/Thu 9:00-10:30 AM",
+      instructor: "Prof. Williams",
+    },
+  ],
+}
 
 export default function StudentDashboard() {
-  const router = useRouter()
-  const [studentData, setStudentData] = useState(null)
-  const [courses, setCourses] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [courses, setCourses] = useState(studentData.enrolledCourses)
 
-  useEffect(() => {
-    async function fetchStudentData() {
-      try {
-        const student = await getLoggedInStudent()
-
-        if (!student) {
-          // Redirect to login if not logged in
-          router.push("/student-login")
-          return
-        }
-
-        setStudentData(student)
-        setCourses(student.enrolled_courses || [])
-      } catch (error) {
-        console.error("Error fetching student data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchStudentData()
-  }, [router])
-
-  const handleDropCourse = (courseId) => {
-    // In a real app, this would call a server action to drop the course
+  const handleDropCourse = (courseId: string) => {
     setCourses(courses.filter((course) => course.id !== courseId))
-  }
-
-  const handleLogout = async () => {
-    await logout("student")
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">Loading...</p>
-      </div>
-    )
-  }
-
-  if (!studentData) {
-    return null // Will redirect in useEffect
   }
 
   return (
@@ -78,12 +66,10 @@ export default function StudentDashboard() {
                 Withdraw
               </Button>
             </Link>
-            <form action={handleLogout}>
-              <Button type="submit" variant="outline" className="text-[#800000] border-[#800000]">
-                <LogOut className="h-5 w-5 mr-2" />
-                Log Out
-              </Button>
-            </form>
+            <Button variant="outline" className="text-[#800000] border-[#800000]">
+              <LogOut className="h-5 w-5 mr-2" />
+              Log Out
+            </Button>
           </div>
         </div>
       </header>
@@ -96,7 +82,7 @@ export default function StudentDashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
                 <h2 className="text-2xl font-bold text-white">Welcome, {studentData.name}!</h2>
-                <p className="text-white/80">Student ID: {studentData.student_id}</p>
+                <p className="text-white/80">Student ID: {studentData.id}</p>
               </div>
               <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-3">
                 <Link href="/course-registration">
@@ -132,7 +118,7 @@ export default function StudentDashboard() {
               <CardTitle className="text-lg font-medium">Total Credit Hours</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-[#800000]">{studentData.credit_hours}</p>
+              <p className="text-2xl font-bold text-[#800000]">{studentData.creditHours}</p>
             </CardContent>
           </Card>
 

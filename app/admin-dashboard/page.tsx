@@ -1,36 +1,20 @@
-import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Bell, BookOpen, ChevronRight, PlusCircle, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getDashboardStats, getRecentNotifications, getPopularCourses } from "@/actions/admin-actions"
-import { getLoggedInAdmin } from "@/actions/auth-actions"
 import AdminSidebar from "@/components/admin-sidebar"
 import AdminHeader from "@/components/admin-header"
 
+// This would come from authentication in a real app
+const adminData = {
+  name: "Dr. Sarah Johnson",
+  id: "ADM2023001",
+  department: "Computer Science",
+}
+
 export default async function AdminDashboard() {
-  // Check if admin is logged in
-  const adminId = cookies().get("adminId")?.value
-
-  if (!adminId) {
-    redirect("/admin-login")
-  }
-
-  // Get admin data
-  const admin = await getLoggedInAdmin()
-
-  if (!admin) {
-    redirect("/admin-login")
-  }
-
-  const adminData = {
-    name: admin.name,
-    id: admin.admin_id,
-    department: admin.department,
-  }
-
   // Fetch data from MongoDB
   const stats = await getDashboardStats(adminData.department)
   const notifications = await getRecentNotifications(adminData.department)

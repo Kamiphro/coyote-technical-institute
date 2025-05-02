@@ -265,95 +265,47 @@ export default function AdminStudents() {
             </CardContent>
           </Card>
 
-          {/* View Toggle and Student Listings */}
+          {/* View Toggle */}
           <div className="flex justify-between items-center mb-6">
+            <Tabs value={viewMode} onValueChange={setViewMode} className="w-auto">
+              <TabsList>
+                <TabsTrigger value="table">Table</TabsTrigger>
+                <TabsTrigger value="cards">Cards</TabsTrigger>
+              </TabsList>
+            </Tabs>
             <div className="text-sm text-gray-500">
               Showing <span className="font-medium">{filteredStudents.length}</span> students
             </div>
           </div>
 
-          <Tabs value={viewMode} onValueChange={setViewMode} className="w-auto">
-            <div className="flex justify-between items-center mb-6">
-              <TabsList>
-                <TabsTrigger value="table">Table</TabsTrigger>
-                <TabsTrigger value="cards">Cards</TabsTrigger>
-              </TabsList>
-            </div>
-
-            {/* Student Listings */}
-            <TabsContent value="table" className="mt-0">
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full bg-white">
-                  <thead className="bg-gray-50 text-gray-700">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Student ID</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Major</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Credits</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">GPA</th>
-                      <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {filteredStudents.map((student) => (
-                      <tr key={student.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4 font-medium">{student.id}</td>
-                        <td className="px-4 py-4">{student.name}</td>
-                        <td className="px-4 py-4">{student.email}</td>
-                        <td className="px-4 py-4">{student.major}</td>
-                        <td className="px-4 py-4">{student.creditHours}</td>
-                        <td className="px-4 py-4">
-                          <span className="font-medium text-[#D4AF37]">{student.gpa}</span>
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Link href={`/admin-students/${student.id}/courses`}>
-                              <Button variant="outline" size="sm">
-                                Courses
-                              </Button>
-                            </Link>
-                            <Link href={`/admin-students/${student.id}`}>
-                              <Button variant="outline" size="sm">
-                                View
-                              </Button>
-                            </Link>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="cards" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredStudents.map((student) => (
-                  <Card key={student.id}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg font-semibold">{student.name}</CardTitle>
-                      <p className="text-sm text-gray-500">{student.id}</p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Email:</span>
-                          <span>{student.email}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Major:</span>
-                          <span>{student.major}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Credit Hours:</span>
-                          <span>{student.creditHours}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">GPA:</span>
-                          <span className="font-medium text-[#D4AF37]">{student.gpa}</span>
-                        </div>
-                        <div className="pt-4 flex justify-end gap-2">
+          {/* Student Listings */}
+          <TabsContent value="table" className="mt-0">
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full bg-white">
+                <thead className="bg-gray-50 text-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Student ID</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Major</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">Credits</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium">GPA</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredStudents.map((student) => (
+                    <tr key={student.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 font-medium">{student.id}</td>
+                      <td className="px-4 py-4">{student.name}</td>
+                      <td className="px-4 py-4">{student.email}</td>
+                      <td className="px-4 py-4">{student.major}</td>
+                      <td className="px-4 py-4">{student.creditHours}</td>
+                      <td className="px-4 py-4">
+                        <span className="font-medium text-[#D4AF37]">{student.gpa}</span>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex justify-end gap-2">
                           <Link href={`/admin-students/${student.id}/courses`}>
                             <Button variant="outline" size="sm">
                               Courses
@@ -365,13 +317,58 @@ export default function AdminStudents() {
                             </Button>
                           </Link>
                         </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="cards" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredStudents.map((student) => (
+                <Card key={student.id}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold">{student.name}</CardTitle>
+                    <p className="text-sm text-gray-500">{student.id}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Email:</span>
+                        <span>{student.email}</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Major:</span>
+                        <span>{student.major}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Credit Hours:</span>
+                        <span>{student.creditHours}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">GPA:</span>
+                        <span className="font-medium text-[#D4AF37]">{student.gpa}</span>
+                      </div>
+                      <div className="pt-4 flex justify-end gap-2">
+                        <Link href={`/admin-students/${student.id}/courses`}>
+                          <Button variant="outline" size="sm">
+                            Courses
+                          </Button>
+                        </Link>
+                        <Link href={`/admin-students/${student.id}`}>
+                          <Button variant="outline" size="sm">
+                            View
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
         </main>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import dbConnect from "@/lib/mongodb"
+import { connectToDatabase } from "@/lib/mongodb"
 import Admin from "@/models/Admin"
 import Course from "@/models/Course"
 import Student from "@/models/Student"
@@ -7,7 +7,7 @@ import Notification from "@/models/Notification"
 
 export async function GET() {
   try {
-    await dbConnect()
+    await connectToDatabase()
 
     // Clear existing data
     await Admin.deleteMany({})
@@ -16,183 +16,154 @@ export async function GET() {
     await Notification.deleteMany({})
 
     // Create admin
-    const admin = new Admin({
-      admin_id: "ADM2023001",
+    const admin = await Admin.create({
       name: "Dr. Sarah Johnson",
       email: "sarah.johnson@coyotetech.edu",
       department: "Computer Science",
-      role: "Department Chair",
-      password: "admin123", // In a real app, this would be hashed
+      admin_id: "ADM2023001",
+      password: "hashed_password_here", // In production, use proper hashing
     })
-    await admin.save()
 
     // Create courses
-    const courses = [
+    const courses = await Course.create([
       {
         course_id: "CS101",
         name: "Introduction to Programming",
-        department: "Computer Science",
+        schedule: "Mon/Wed 10:00-11:30 AM",
         instructor: "Dr. Smith",
-        description: "An introduction to programming concepts and techniques.",
+        department: "Computer Science",
         credits: 3,
-        max_size: 30,
-        schedule: "Mon/Wed",
-        time_slot: "10:00-11:30 AM",
-        prerequisites: [],
-        enrolled_students: [],
-        waitlist: [],
+        capacity: 30,
+        enrolled: 30,
+        waitlist: 5,
         status: "active",
+        description: "An introduction to programming concepts using Python.",
       },
       {
         course_id: "CS210",
         name: "Data Structures",
-        department: "Computer Science",
+        schedule: "Tue/Thu 1:00-2:30 PM",
         instructor: "Dr. Chen",
-        description: "A study of data structures and their applications.",
+        department: "Computer Science",
         credits: 4,
-        max_size: 25,
-        schedule: "Tue/Thu",
-        time_slot: "1:00-2:30 PM",
-        prerequisites: ["CS101"],
-        enrolled_students: [],
-        waitlist: [],
+        capacity: 30,
+        enrolled: 28,
+        waitlist: 0,
         status: "active",
+        description: "Study of data structures and algorithms.",
       },
       {
-        course_id: "CS310",
-        name: "Algorithms",
+        course_id: "CS305",
+        name: "Database Systems",
+        schedule: "Tue/Thu 11:00-12:30 PM",
+        instructor: "Dr. Martinez",
         department: "Computer Science",
-        instructor: "Dr. Patel",
-        description: "Design and analysis of algorithms.",
         credits: 3,
-        max_size: 25,
-        schedule: "Mon/Wed/Fri",
-        time_slot: "2:00-3:00 PM",
-        prerequisites: ["CS210"],
-        enrolled_students: [],
-        waitlist: [],
+        capacity: 25,
+        enrolled: 25,
+        waitlist: 8,
         status: "active",
+        description: "Introduction to database design and SQL.",
       },
       {
-        course_id: "CS450",
-        name: "Operating Systems",
+        course_id: "CS401",
+        name: "Artificial Intelligence",
+        schedule: "Tue/Thu 2:00-3:30 PM",
+        instructor: "Dr. Lee",
         department: "Computer Science",
-        instructor: "Dr. Garcia",
-        description: "Principles of operating systems.",
         credits: 4,
-        max_size: 20,
-        schedule: "Tue/Thu",
-        time_slot: "3:00-4:30 PM",
-        prerequisites: ["CS210", "CS310"],
-        enrolled_students: [],
-        waitlist: [],
+        capacity: 25,
+        enrolled: 23,
+        waitlist: 0,
         status: "active",
+        description: "Fundamentals of AI and machine learning.",
       },
-    ]
-
-    await Course.insertMany(courses)
+    ])
 
     // Create students
-    const students = [
+    const students = await Student.create([
       {
-        student_id: "CTI2023456",
+        name: "John Doe",
+        email: "john.doe@coyotetech.edu",
+        student_id: "STU20230001",
+        major: "Computer Science",
+        credits_completed: 45,
+        gpa: 3.7,
+        enrolled_courses: ["CS101", "CS305"],
+        waitlisted_courses: [],
+        status: "active",
+      },
+      {
+        name: "Jane Smith",
+        email: "jane.smith@coyotetech.edu",
+        student_id: "STU20230002",
+        major: "Computer Science",
+        credits_completed: 60,
+        gpa: 3.9,
+        enrolled_courses: ["CS101", "CS210"],
+        waitlisted_courses: ["CS305"],
+        status: "active",
+      },
+      {
         name: "Alex Johnson",
         email: "alex.johnson@coyotetech.edu",
-        major: "Computer Science",
-        credit_hours: 42,
-        gpa: 3.75,
-        status: "active",
-        enrolled_courses: [
-          {
-            id: "CS101",
-            name: "Introduction to Programming",
-            credits: 3,
-            schedule: "Mon/Wed 10:00-11:30 AM",
-            instructor: "Dr. Smith",
-          },
-          {
-            id: "CS210",
-            name: "Data Structures",
-            credits: 4,
-            schedule: "Tue/Thu 1:00-2:30 PM",
-            instructor: "Dr. Chen",
-          },
-        ],
-        password: "student123", // In a real app, this would be hashed
-      },
-      {
-        student_id: "CTI2023789",
-        name: "Jamie Smith",
-        email: "jamie.smith@coyotetech.edu",
-        major: "Computer Science",
-        credit_hours: 36,
+        student_id: "STU20230003",
+        major: "Data Science",
+        credits_completed: 30,
         gpa: 3.5,
+        enrolled_courses: ["CS101"],
+        waitlisted_courses: ["CS305"],
         status: "active",
-        enrolled_courses: [
-          {
-            id: "CS101",
-            name: "Introduction to Programming",
-            credits: 3,
-            schedule: "Mon/Wed 10:00-11:30 AM",
-            instructor: "Dr. Smith",
-          },
-        ],
-        password: "student123", // In a real app, this would be hashed
       },
-      {
-        student_id: "CTI2023123",
-        name: "Taylor Lee",
-        email: "taylor.lee@coyotetech.edu",
-        major: "Computer Science",
-        credit_hours: 24,
-        gpa: 3.2,
-        status: "active",
-        enrolled_courses: [],
-        password: "student123", // In a real app, this would be hashed
-      },
-    ]
-
-    await Student.insertMany(students)
-
-    // Update course enrollments
-    await Course.findOneAndUpdate(
-      { course_id: "CS101" },
-      { $push: { enrolled_students: { $each: ["CTI2023456", "CTI2023789"] } } },
-    )
-    await Course.findOneAndUpdate({ course_id: "CS210" }, { $push: { enrolled_students: "CTI2023456" } })
+    ])
 
     // Create notifications
-    const notifications = [
+    const notifications = await Notification.create([
       {
-        type: "add",
-        student_id: "CTI2023456",
-        student_name: "Alex Johnson",
-        course_id: "CS101",
-        course_name: "Introduction to Programming",
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        title: "Course Enrollment",
+        message: "John Doe has enrolled in CS101",
+        type: "enrollment",
+        read: false,
+        timestamp: new Date(),
+        related_student: "STU20230001",
+        related_course: "CS101",
+      },
+      {
+        title: "Waitlist Addition",
+        message: "Jane Smith has been added to the waitlist for CS305",
+        type: "waitlist",
+        read: false,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+        related_student: "STU20230002",
+        related_course: "CS305",
+      },
+      {
+        title: "Course Drop",
+        message: "Alex Johnson has dropped CS210",
+        type: "drop",
         read: true,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+        related_student: "STU20230003",
+        related_course: "CS210",
       },
       {
-        type: "add",
-        student_id: "CTI2023456",
-        student_name: "Alex Johnson",
-        course_id: "CS210",
-        course_name: "Data Structures",
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        title: "Waitlist Addition",
+        message: "Alex Johnson has been added to the waitlist for CS305",
+        type: "waitlist",
         read: false,
+        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+        related_student: "STU20230003",
+        related_course: "CS305",
       },
       {
-        type: "add",
-        student_id: "CTI2023789",
-        student_name: "Jamie Smith",
-        course_id: "CS101",
-        course_name: "Introduction to Programming",
-        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+        title: "Course Full",
+        message: "CS305 has reached maximum capacity",
+        type: "system",
         read: false,
+        timestamp: new Date(Date.now() - 1000 * 60 * 90), // 90 minutes ago
+        related_course: "CS305",
       },
-    ]
-
-    await Notification.insertMany(notifications)
+    ])
 
     return NextResponse.json({
       success: true,
@@ -207,7 +178,7 @@ export async function GET() {
   } catch (error) {
     console.error("Error seeding database:", error)
     return NextResponse.json(
-      { success: false, message: "Error seeding database", error: error.message },
+      { success: false, message: "Failed to seed database", error: error.message },
       { status: 500 },
     )
   }
