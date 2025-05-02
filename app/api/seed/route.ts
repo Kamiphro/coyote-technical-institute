@@ -4,6 +4,7 @@ import Admin from "@/models/Admin"
 import Course from "@/models/Course"
 import Student from "@/models/Student"
 import Notification from "@/models/Notification"
+import bcrypt from "bcryptjs"
 
 export async function GET() {
   try {
@@ -15,13 +16,21 @@ export async function GET() {
     await Student.deleteMany({})
     await Notification.deleteMany({})
 
+    // Create plain text passwords for testing
+    const plainAdminPassword = "admin123"
+    const plainStudentPassword = "student123"
+
+    // Hash passwords
+    const adminPasswordHash = await bcrypt.hash(plainAdminPassword, 10)
+    const studentPasswordHash = await bcrypt.hash(plainStudentPassword, 10)
+
     // Create admin
     const admin = await Admin.create({
       name: "Dr. Sarah Johnson",
       email: "sarah.johnson@coyotetech.edu",
       department: "Computer Science",
-      admin_id: "ADM2023001",
-      password: "hashed_password_here", // In production, use proper hashing
+      admin_id: "admin123", // Simple admin ID for testing
+      password: adminPasswordHash,
     })
 
     // Create courses
@@ -85,7 +94,8 @@ export async function GET() {
       {
         name: "John Doe",
         email: "john.doe@coyotetech.edu",
-        student_id: "STU20230001",
+        student_id: "student123", // Simple student ID for testing
+        password: studentPasswordHash,
         major: "Computer Science",
         credits_completed: 45,
         gpa: 3.7,
@@ -97,6 +107,7 @@ export async function GET() {
         name: "Jane Smith",
         email: "jane.smith@coyotetech.edu",
         student_id: "STU20230002",
+        password: studentPasswordHash,
         major: "Computer Science",
         credits_completed: 60,
         gpa: 3.9,
@@ -108,6 +119,7 @@ export async function GET() {
         name: "Alex Johnson",
         email: "alex.johnson@coyotetech.edu",
         student_id: "STU20230003",
+        password: studentPasswordHash,
         major: "Data Science",
         credits_completed: 30,
         gpa: 3.5,
@@ -125,7 +137,7 @@ export async function GET() {
         type: "enrollment",
         read: false,
         timestamp: new Date(),
-        related_student: "STU20230001",
+        related_student: "student123",
         related_course: "CS101",
       },
       {
@@ -173,6 +185,16 @@ export async function GET() {
         courses: courses.length,
         students: students.length,
         notifications: notifications.length,
+      },
+      loginCredentials: {
+        admin: {
+          id: "admin123",
+          password: plainAdminPassword,
+        },
+        student: {
+          id: "student123",
+          password: plainStudentPassword,
+        },
       },
     })
   } catch (error) {
